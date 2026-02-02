@@ -56,16 +56,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 /**
- * IM Due Diligence Data Room – Responsive Mock UI (Latest Requirements)
+ * IM Due Diligence Data Room – Responsive Mock UI
  *
- * Latest requirement highlights implemented in this mock:
+ * A secure, role-based document management system for due diligence processes in investment deals.
+ *
+ * Features:
  * - Deal-level Data Room (one room per deal)
- * - Issuer is an organization; all issuer members have full issuer permissions (no collaborator role)
- * - Storage model shown as container-per-issuer with deal prefixes (informational)
- * - Detailed permission matrix enforced in UI: Issuer manages; MM/Investor read-only
- * - Lifecycle controls: room expiry, user expiry, soft delete, hard delete, legal hold (UI + logs)
+ * - Issuer organization with full management permissions
+ * - Storage model: container-per-issuer with deal prefixes
+ * - Permission matrix: Issuer manages; Market Maker/Investor read-only
+ * - Lifecycle controls: room expiry, user expiry, soft delete, hard delete, legal hold
  * - DocSend-like viewer: read-only, watermark, download/print blocked + audit events
  */
+
+// ============================================================================
+// Constants & Configuration
+// ============================================================================
 
 const BRAND = {
   name: "intain MARKETS",
@@ -108,7 +114,7 @@ const DEALS = [
   },
 ];
 
-// Folder tree is represented as prefixes
+// Documents - Mock document data (folder tree represented as path prefixes)
 const DOCS = [
   {
     id: "DOC-1001",
@@ -192,6 +198,7 @@ const ACCESS = [
   // Deal Beta access
 ];
 
+// Audit Log Seed Data - Initial audit events
 const AUDIT_SEED = [
   {
     id: "EVT-01",
@@ -230,10 +237,10 @@ function Pill({ icon: Icon, label, tone = "default" }) {
     tone === "ok"
       ? "bg-emerald-50 text-emerald-700 border-emerald-100"
       : tone === "warn"
-      ? "bg-amber-50 text-amber-700 border-amber-100"
-      : tone === "bad"
-      ? "bg-rose-50 text-rose-700 border-rose-100"
-      : "bg-slate-50 text-slate-700 border-slate-100";
+        ? "bg-amber-50 text-amber-700 border-amber-100"
+        : tone === "bad"
+          ? "bg-rose-50 text-rose-700 border-rose-100"
+          : "bg-slate-50 text-slate-700 border-slate-100";
   return (
     <span className={cn("inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs", styles)}>
       {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
@@ -316,7 +323,9 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return DEALS;
-    return DEALS.filter((d) => [d.id, d.issuerOrg, d.poolId, d.status, d.dataRoom.status].some((x) => String(x).toLowerCase().includes(q)));
+    return DEALS.filter((d) =>
+      [d.id, d.issuerOrg, d.poolId, d.status, d.dataRoom.status].some((x) => String(x).toLowerCase().includes(q))
+    );
   }, [query]);
 
   return (
@@ -327,7 +336,12 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search deals…" className="pl-8" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search deals…"
+                className="pl-8"
+              />
             </div>
             <Button variant="outline" size="icon" aria-label="Filter">
               <Filter className="h-4 w-4" />
@@ -353,7 +367,9 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold">{d.id}</div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">Issuer: {d.issuerOrg} • Pool: {d.poolId}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    Issuer: {d.issuerOrg} • Pool: {d.poolId}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"}>{d.dataRoom.status}</Badge>
@@ -393,7 +409,9 @@ function DealSummary({ deal, role }) {
             <ShieldCheck className="mr-1 h-3.5 w-3.5" /> One Data Room / Deal
           </Badge>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">Due diligence data room is temporary and controlled by IM custody + RBAC.</div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          Due diligence data room is temporary and controlled by IM custody + RBAC.
+        </div>
       </CardHeader>
       <CardContent className="pt-2">
         <div className="grid grid-cols-2 gap-3 text-sm">
@@ -421,7 +439,8 @@ function DealSummary({ deal, role }) {
             <div>
               <div className="font-semibold text-slate-900">Storage layout (informational)</div>
               <div className="mt-1">
-                Container-per-Issuer: <span className="font-semibold">issuer-&#123;issuerId&#125;</span> → deals/<span className="font-semibold">{deal.id}</span>/dataroom/…
+                Container-per-Issuer: <span className="font-semibold">issuer-&#123;issuerId&#125;</span> → deals/
+                <span className="font-semibold">{deal.id}</span>/dataroom/…
               </div>
             </div>
           </div>
@@ -430,7 +449,11 @@ function DealSummary({ deal, role }) {
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Pill icon={Lock} label={canManage ? "Issuer can manage" : "Read-only"} tone={canManage ? "ok" : "default"} />
           <Pill icon={CalendarClock} label={`Room expiry: ${deal.dataRoom.expiry}`} />
-          {deal.dataRoom.legalHold ? <Pill icon={Ban} label="Legal hold" tone="warn" /> : <Pill icon={BadgeCheck} label="No legal hold" tone="ok" />}
+          {deal.dataRoom.legalHold ? (
+            <Pill icon={Ban} label="Legal hold" tone="warn" />
+          ) : (
+            <Pill icon={BadgeCheck} label="No legal hold" tone="ok" />
+          )}
         </div>
       </CardContent>
     </Card>
@@ -498,7 +521,9 @@ function DocTable({ docs, canManage, onOpen, onUpload, onDelete, onReplace }) {
             ) : null}
           </div>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">Viewer is DocSend-like: watermark + audit + blocked download/print.</div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          Viewer is DocSend-like: watermark + audit + blocked download/print.
+        </div>
       </CardHeader>
       <CardContent className="pt-2">
         <div className="overflow-hidden rounded-2xl border">
@@ -555,7 +580,9 @@ function AccessPanel({ access, canManage, onInvite }) {
             ) : null}
           </div>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">Issuer can invite internal roles (Market Maker, Investor). All non-issuer access is view-only.</div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          Issuer can invite internal roles (Market Maker, Investor). All non-issuer access is view-only.
+        </div>
       </CardHeader>
       <CardContent className="pt-2">
         <div className="overflow-hidden rounded-2xl border">
@@ -685,7 +712,9 @@ function Viewer({ dealId, doc, viewerIdentity, onClose, onAudit }) {
               <FileText className="h-6 w-6" />
             </div>
             <div className="mt-3 text-sm font-semibold">No document open</div>
-            <div className="mt-1 text-sm text-muted-foreground">Open a document from the Data Room to view it here.</div>
+            <div className="mt-1 text-sm text-muted-foreground">
+              Open a document from the Data Room to view it here.
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -770,18 +799,26 @@ function Viewer({ dealId, doc, viewerIdentity, onClose, onAudit }) {
               <div className="p-4 sm:p-6">
                 <div
                   className="mx-auto rounded-2xl border bg-white shadow-sm"
-                  style={{ width: "min(920px, 100%)", transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}
+                  style={{
+                    width: "min(920px, 100%)",
+                    transform: `scale(${zoom / 100})`,
+                    transformOrigin: "top center",
+                  }}
                 >
                   <div className="border-b px-6 py-4">
                     <div className="text-lg font-semibold" style={{ color: BRAND.accent2 }}>
                       {doc.name.replace(".pdf", "")} — Preview
                     </div>
-                    <div className="mt-1 text-sm text-muted-foreground">Deal: {dealId} • Doc: {doc.id}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      Deal: {dealId} • Doc: {doc.id}
+                    </div>
                   </div>
                   <div className="px-6 py-10">
                     <div className="text-center">
                       <div className="text-sm font-semibold">Wireframe Page {page}</div>
-                      <div className="mt-1 text-sm text-muted-foreground">Mock canvas. Integrate PDF.js in implementation.</div>
+                      <div className="mt-1 text-sm text-muted-foreground">
+                        Mock canvas. Integrate PDF.js in implementation.
+                      </div>
                     </div>
                     <div className="mt-8 grid gap-4 sm:grid-cols-2">
                       <div className="rounded-2xl border p-4">
@@ -850,7 +887,8 @@ function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
         ) : (
           <div className="space-y-3">
             <div className="rounded-2xl border bg-slate-50 p-3 text-xs text-muted-foreground">
-              Deal: <span className="font-semibold text-slate-900">{dealId}</span> • All invites require an expiry date • Default permission is View Only
+              Deal: <span className="font-semibold text-slate-900">{dealId}</span> • All invites require an expiry date
+              • Default permission is View Only
             </div>
 
             <div className="space-y-2">
@@ -861,8 +899,15 @@ function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
             <div className="space-y-2">
               <div className="text-xs font-semibold">Role</div>
               <div className="flex gap-2">
-                <Button variant={role === "INVESTOR" ? "default" : "outline"} onClick={() => setRole("INVESTOR")}>Investor</Button>
-                <Button variant={role === "MARKET_MAKER" ? "default" : "outline"} onClick={() => setRole("MARKET_MAKER")}>Market Maker</Button>
+                <Button variant={role === "INVESTOR" ? "default" : "outline"} onClick={() => setRole("INVESTOR")}>
+                  Investor
+                </Button>
+                <Button
+                  variant={role === "MARKET_MAKER" ? "default" : "outline"}
+                  onClick={() => setRole("MARKET_MAKER")}
+                >
+                  Market Maker
+                </Button>
               </div>
             </div>
 
@@ -872,7 +917,9 @@ function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
               <Button onClick={() => onOpenChange(false)}>
                 <LinkIcon className="mr-2 h-4 w-4" /> Send Invite
               </Button>
@@ -912,7 +959,9 @@ function CreateFolderDialog({ open, onOpenChange, canManage }) {
               Folder is stored as a prefix under deals/&lt;dealId&gt;/dataroom/&lt;folder&gt;/
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
               <Button onClick={() => onOpenChange(false)}>
                 <FolderPlus className="mr-2 h-4 w-4" /> Create
               </Button>
@@ -939,14 +988,16 @@ export default function IMDueDiligenceDataRoomMock() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [folderOpen, setFolderOpen] = useState(false);
 
+  // ==========================================================================
+  // Computed Values & Derived State
+  // ==========================================================================
+
   const deal = useMemo(() => DEALS.find((d) => d.id === selectedDealId), [selectedDealId]);
 
+  // Permission Flags
   const canManageRoom = role === "ISSUER";
   const canInvite = role === "ISSUER";
-  const canViewRoom = true; // everyone can view the room UI, but content access depends on room + user access policy
-
-  // permission enforcement: only Issuer can upload/modify
-  const canUpload = canManageRoom;
+  const canUpload = canManageRoom; // Only Issuer can upload/modify documents
 
   const accessForDeal = useMemo(() => ACCESS.filter((a) => a.dealId === selectedDealId), [selectedDealId]);
 
@@ -961,6 +1012,21 @@ export default function IMDueDiligenceDataRoomMock() {
     return all.filter((d) => d.path === activeFolder);
   }, [selectedDealId, activeFolder]);
 
+  // Filtered Data
+  const accessForDeal = useMemo(() => ACCESS.filter((a) => a.dealId === selectedDealId), [selectedDealId]);
+
+  const folders = useMemo(() => {
+    const set = new Set(DOCS.filter((d) => d.dealId === selectedDealId).map((d) => d.path));
+    return Array.from(set).sort();
+  }, [selectedDealId]);
+
+  const docsForView = useMemo(() => {
+    const all = DOCS.filter((d) => d.dealId === selectedDealId);
+    if (activeFolder === "ALL") return all;
+    return all.filter((d) => d.path === activeFolder);
+  }, [selectedDealId, activeFolder]);
+
+  // Viewer Identity for Watermarking
   const viewerIdentity = useMemo(() => {
     if (role === "ISSUER") return "issuer_member@issuer.com (Issuer)";
     if (role === "MARKET_MAKER") return "intaindemo_facilityagent@intainft.com (Market Maker)";
@@ -968,6 +1034,15 @@ export default function IMDueDiligenceDataRoomMock() {
     return "issuer_member@issuer.com (Issuer)";
   }, [role]);
 
+  // ==========================================================================
+  // Event Handlers & Business Logic
+  // ==========================================================================
+
+  /**
+   * Adds an audit event to the audit log
+   * @param {string} action - Action type (e.g., "VIEW_START", "DOWNLOAD_BLOCKED")
+   * @param {Object} doc - Document object (optional)
+   */
   function addAudit(action, doc) {
     const evt = {
       id: `EVT-${String(audit.length + 1).padStart(2, "0")}`,
@@ -982,8 +1057,12 @@ export default function IMDueDiligenceDataRoomMock() {
     setAudit((a) => [evt, ...a]);
   }
 
+  /**
+   * Opens the secure document viewer with access validation
+   * @param {Object} doc - Document object to view
+   */
   function openViewer(doc) {
-    // Enforce room state: if expired, no one can view content.
+    // Enforce room state: if expired, no one can view content
     if (deal.dataRoom.status !== "ACTIVE") {
       addAudit("ACCESS_DENIED_ROOM_EXPIRED", doc);
       setRoute("AUDIT");
@@ -1005,6 +1084,10 @@ export default function IMDueDiligenceDataRoomMock() {
     addAudit("VIEW_START", doc);
   }
 
+  // ==========================================================================
+  // Render
+  // ==========================================================================
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <TopNav
@@ -1024,13 +1107,14 @@ export default function IMDueDiligenceDataRoomMock() {
               {route === "DEALS"
                 ? "Deals"
                 : route === "ROOM"
-                ? "Due Diligence Data Room"
-                : route === "VIEWER"
-                ? "Secure Viewer"
-                : "Audit"}
+                  ? "Due Diligence Data Room"
+                  : route === "VIEWER"
+                    ? "Secure Viewer"
+                    : "Audit"}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
-              Role: <span className="font-semibold text-slate-900">{ROLES.find((r) => r.key === role)?.label}</span> • Deal: <span className="font-semibold text-slate-900">{selectedDealId}</span>
+              Role: <span className="font-semibold text-slate-900">{ROLES.find((r) => r.key === role)?.label}</span> •
+              Deal: <span className="font-semibold text-slate-900">{selectedDealId}</span>
             </div>
           </div>
 
@@ -1066,13 +1150,21 @@ export default function IMDueDiligenceDataRoomMock() {
           <div className="lg:col-span-7">
             <AnimatePresence mode="wait">
               {route === "DEALS" && (
-                <motion.div key="deals" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+                <motion.div
+                  key="deals"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                >
                   <Card className="rounded-2xl shadow-sm">
                     <CardContent className="pt-6">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <div className="text-sm font-semibold">Open Due Diligence Data Room</div>
-                          <div className="mt-1 text-sm text-muted-foreground">Navigate to the deal's data room to manage documents and access.</div>
+                          <div className="mt-1 text-sm text-muted-foreground">
+                            Navigate to the deal's data room to manage documents and access.
+                          </div>
                         </div>
                         <Button onClick={() => setRoute("ROOM")}>
                           <FolderTree className="mr-2 h-4 w-4" /> Open Data Room
@@ -1084,7 +1176,14 @@ export default function IMDueDiligenceDataRoomMock() {
               )}
 
               {route === "ROOM" && deal && (
-                <motion.div key="room" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }} className="space-y-4">
+                <motion.div
+                  key="room"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                  className="space-y-4"
+                >
                   <div className="grid gap-4 md:grid-cols-12">
                     <div className="md:col-span-4">
                       <FolderSidebar
@@ -1138,7 +1237,14 @@ export default function IMDueDiligenceDataRoomMock() {
               )}
 
               {route === "VIEWER" && deal && (
-                <motion.div key="viewer" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }} className="space-y-4">
+                <motion.div
+                  key="viewer"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                  className="space-y-4"
+                >
                   <Viewer
                     dealId={selectedDealId}
                     doc={selectedDoc}
@@ -1154,11 +1260,17 @@ export default function IMDueDiligenceDataRoomMock() {
               )}
 
               {route === "AUDIT" && (
-                <motion.div key="audit" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }} className="space-y-4">
+                <motion.div
+                  key="audit"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                  className="space-y-4"
+                >
                   <AuditPanel audit={audit.filter((a) => a.dealId === selectedDealId)} />
                 </motion.div>
               )}
-
             </AnimatePresence>
           </div>
         </div>
@@ -1171,10 +1283,12 @@ export default function IMDueDiligenceDataRoomMock() {
         <div className="rounded-2xl border bg-white p-4 text-xs text-muted-foreground">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4" /> IM POC • Due Diligence Data Room • DocSend-like viewer • RBAC + expiry + audit
+              <ShieldCheck className="h-4 w-4" /> IM POC • Due Diligence Data Room • DocSend-like viewer • RBAC + expiry
+              + audit
             </div>
             <div className="flex items-center gap-2">
-              <Info className="h-4 w-4" /> Storage: Container-per-Issuer with deal prefixes • No direct blob links to users
+              <Info className="h-4 w-4" /> Storage: Container-per-Issuer with deal prefixes • No direct blob links to
+              users
             </div>
           </div>
         </div>
@@ -1182,4 +1296,3 @@ export default function IMDueDiligenceDataRoomMock() {
     </div>
   );
 }
-
