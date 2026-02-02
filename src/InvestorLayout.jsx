@@ -62,7 +62,7 @@ import { cn } from "@/lib/utils";
  * - Deal-level Data Room (one room per deal)
  * - Issuer is an organization; all issuer members have full issuer permissions (no collaborator role)
  * - Storage model shown as container-per-issuer with deal prefixes (informational)
- * - Detailed permission matrix enforced in UI: Issuer manages; MM/Investor/External read-only; Admin overrides
+ * - Detailed permission matrix enforced in UI: Issuer manages; MM/Investor read-only
  * - Lifecycle controls: room expiry, user expiry, soft delete, hard delete, legal hold (UI + logs)
  * - DocSend-like viewer: read-only, watermark, download/print blocked + audit events
  */
