@@ -965,8 +965,7 @@ export default function IMDueDiligenceDataRoomMock() {
     if (role === "ISSUER") return "issuer_member@issuer.com (Issuer)";
     if (role === "MARKET_MAKER") return "intaindemo_facilityagent@intainft.com (Market Maker)";
     if (role === "INVESTOR") return "intaindemo_lender1@intainft.com (Investor)";
-    if (role === "EXTERNAL") return "external_guest@company.com (External)";
-    return "admin@intainft.com (Admin)";
+    return "issuer_member@issuer.com (Issuer)";
   }, [role]);
 
   function addAudit(action, doc) {
