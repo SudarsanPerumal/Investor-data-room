@@ -1,4 +1,4 @@
-# Investor Data Room - Complete Documentation
+    # Investor Data Room - Complete Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -124,6 +124,410 @@ The **Investor Data Room** is a secure, role-based document management system de
   - Legal hold controls
   - Force soft/hard delete
   - Access all deals regardless of access grants
+
+---
+
+## User Role-Based Actions Matrix
+
+This section provides a comprehensive breakdown of what each role can and cannot do in the application.
+
+### Action Categories
+
+| Action Category | Description |
+|---------------|-------------|
+| **View** | Viewing data, documents, or interfaces |
+| **Manage** | Creating, updating, or deleting resources |
+| **Invite** | Inviting users and managing access |
+| **Admin** | System-level administrative actions |
+| **Audit** | Viewing audit logs and activity history |
+
+---
+
+### 1. Issuer (Org Member) - Actions Matrix
+
+#### ✅ **Allowed Actions**
+
+| Action | Description | Notes |
+|--------|-------------|-------|
+| **View Deals** | View all deals list | Can see all deals |
+| **Select Deal** | Select any deal to view | Full access to own deals |
+| **View Data Room** | Access data room interface | Can view room structure |
+| **View Documents** | View all documents in deal | Full document visibility |
+| **View Document Details** | See document metadata | Size, pages, uploader, date |
+| **Open Secure Viewer** | Open documents in viewer | Can view all documents |
+| **Navigate Pages** | Navigate through document pages | Full navigation |
+| **Zoom Documents** | Zoom in/out (80%-160%) | Full zoom control |
+| **Upload Documents** | Upload new documents | Can upload to any folder |
+| **Replace Documents** | Replace existing documents | Can update documents |
+| **Delete Documents** | Delete documents | Can remove documents |
+| **Create Folders** | Create new folders | Can organize structure |
+| **View Folders** | Browse folder structure | Full folder access |
+| **Filter by Folder** | Filter documents by folder | Can use folder filter |
+| **View Access List** | See all users with access | Can see access grants |
+| **Invite Users** | Invite internal users | Can invite Investors, Market Makers |
+| **Invite External Users** | Invite external guests | If external sharing enabled |
+| **Set User Expiry** | Set expiry dates for invites | Can control access duration |
+| **View Audit Logs** | View audit trail | Can see all audit events |
+| **Filter Audit by Deal** | Filter audit logs | Can filter by selected deal |
+| **Switch Roles** | Switch to other roles | For testing/demo purposes |
+| **Search Deals** | Search deals list | Can search and filter |
+
+#### ❌ **Restricted Actions**
+
+| Action | Reason |
+|--------|--------|
+| **Download Documents** | Blocked (logged as DOWNLOAD_BLOCKED) |
+| **Print Documents** | Blocked (logged as PRINT_BLOCKED) |
+| **Modify Global Policies** | Admin-only action |
+| **Apply Legal Hold** | Admin-only action |
+| **Force Delete** | Admin-only action |
+| **Access Other Issuer's Deals** | Can only access own organization's deals |
+
+#### 📊 **Permission Summary**
+- **Document Management**: ✅ Full (Upload, Delete, Replace, Organize)
+- **Access Management**: ✅ Full (Invite, Set Expiry)
+- **Viewing**: ✅ Full (All documents, All deals)
+- **Admin Functions**: ❌ None
+- **Audit Access**: ✅ View only
+
+---
+
+### 2. Market Maker - Actions Matrix
+
+#### ✅ **Allowed Actions**
+
+| Action | Description | Notes |
+|--------|-------------|-------|
+| **View Deals** | View deals list | Can see deals they have access to |
+| **Select Deal** | Select deal with access grant | Must have active access |
+| **View Data Room** | Access data room interface | Can view room structure |
+| **View Documents** | View documents in deal | Only if access granted |
+| **View Document Details** | See document metadata | Size, pages, uploader, date |
+| **Open Secure Viewer** | Open documents in viewer | If access granted and room active |
+| **Navigate Pages** | Navigate through document pages | Full navigation in viewer |
+| **Zoom Documents** | Zoom in/out (80%-160%) | Full zoom control |
+| **View Folders** | Browse folder structure | Can see folder organization |
+| **Filter by Folder** | Filter documents by folder | Can use folder filter |
+| **View Access List** | See all users with access | Read-only view |
+| **View Audit Logs** | View audit trail | Can see audit events |
+| **Filter Audit by Deal** | Filter audit logs | Can filter by selected deal |
+| **Switch Roles** | Switch to other roles | For testing/demo purposes |
+| **Search Deals** | Search deals list | Can search and filter |
+
+#### ❌ **Restricted Actions**
+
+| Action | Reason |
+|--------|--------|
+| **Upload Documents** | Issuer/Admin only |
+| **Delete Documents** | Issuer/Admin only |
+| **Replace Documents** | Issuer/Admin only |
+| **Create Folders** | Issuer/Admin only |
+| **Invite Users** | Issuer/Admin only |
+| **Download Documents** | Blocked (logged as DOWNLOAD_BLOCKED) |
+| **Print Documents** | Blocked (logged as PRINT_BLOCKED) |
+| **View Documents Without Access** | Must have active access grant |
+| **View Expired Room Documents** | Room must be ACTIVE |
+| **Modify Global Policies** | Admin-only action |
+| **Access Admin Panel** | Admin-only action |
+
+#### 🔒 **Access Requirements**
+- Must be explicitly invited to a deal
+- Access grant must be ACTIVE
+- Access must not be expired
+- Deal room must be ACTIVE (not EXPIRED)
+- External sharing must be enabled (if external user)
+
+#### 📊 **Permission Summary**
+- **Document Management**: ❌ None (Read-only)
+- **Access Management**: ❌ None
+- **Viewing**: ✅ Conditional (Only with access grant)
+- **Admin Functions**: ❌ None
+- **Audit Access**: ✅ View only
+
+---
+
+### 3. Investor - Actions Matrix
+
+#### ✅ **Allowed Actions**
+
+| Action | Description | Notes |
+|--------|-------------|-------|
+| **View Deals** | View deals list | Can see deals they have access to |
+| **Select Deal** | Select deal with access grant | Must have active access |
+| **View Data Room** | Access data room interface | Can view room structure |
+| **View Documents** | View documents in deal | Only if access granted |
+| **View Document Details** | See document metadata | Size, pages, uploader, date |
+| **Open Secure Viewer** | Open documents in viewer | If access granted and room active |
+| **Navigate Pages** | Navigate through document pages | Full navigation in viewer |
+| **Zoom Documents** | Zoom in/out (80%-160%) | Full zoom control |
+| **View Folders** | Browse folder structure | Can see folder organization |
+| **Filter by Folder** | Filter documents by folder | Can use folder filter |
+| **View Access List** | See all users with access | Read-only view |
+| **View Audit Logs** | View audit trail | Can see audit events |
+| **Filter Audit by Deal** | Filter audit logs | Can filter by selected deal |
+| **Switch Roles** | Switch to other roles | For testing/demo purposes |
+| **Search Deals** | Search deals list | Can search and filter |
+
+#### ❌ **Restricted Actions**
+
+| Action | Reason |
+|--------|--------|
+| **Upload Documents** | Issuer/Admin only |
+| **Delete Documents** | Issuer/Admin only |
+| **Replace Documents** | Issuer/Admin only |
+| **Create Folders** | Issuer/Admin only |
+| **Invite Users** | Issuer/Admin only |
+| **Download Documents** | Blocked (logged as DOWNLOAD_BLOCKED) |
+| **Print Documents** | Blocked (logged as PRINT_BLOCKED) |
+| **View Documents Without Access** | Must have active access grant |
+| **View Expired Room Documents** | Room must be ACTIVE |
+| **Modify Global Policies** | Admin-only action |
+| **Access Admin Panel** | Admin-only action |
+
+#### 🔒 **Access Requirements**
+- Must be explicitly invited to a deal
+- Access grant must be ACTIVE
+- Access must not be expired
+- Deal room must be ACTIVE (not EXPIRED)
+
+#### 📊 **Permission Summary**
+- **Document Management**: ❌ None (Read-only)
+- **Access Management**: ❌ None
+- **Viewing**: ✅ Conditional (Only with access grant)
+- **Admin Functions**: ❌ None
+- **Audit Access**: ✅ View only
+
+**Note**: Investor and Market Maker have identical permissions - both are read-only roles with the same access requirements.
+
+---
+
+### 4. External Guest - Actions Matrix
+
+#### ✅ **Allowed Actions**
+
+| Action | Description | Notes |
+|--------|-------------|-------|
+| **View Deals** | View deals list | Can see deals they have access to |
+| **Select Deal** | Select deal with access grant | Must have active access |
+| **View Data Room** | Access data room interface | Can view room structure |
+| **View Documents** | View documents in deal | Only if access granted AND external sharing enabled |
+| **View Document Details** | See document metadata | Size, pages, uploader, date |
+| **Open Secure Viewer** | Open documents in viewer | If access granted, room active, and external sharing ON |
+| **Navigate Pages** | Navigate through document pages | Full navigation in viewer |
+| **Zoom Documents** | Zoom in/out (80%-160%) | Full zoom control |
+| **View Folders** | Browse folder structure | Can see folder organization |
+| **Filter by Folder** | Filter documents by folder | Can use folder filter |
+| **View Access List** | See all users with access | Read-only view |
+| **View Audit Logs** | View audit trail | Can see audit events |
+| **Filter Audit by Deal** | Filter audit logs | Can filter by selected deal |
+| **Switch Roles** | Switch to other roles | For testing/demo purposes |
+| **Search Deals** | Search deals list | Can search and filter |
+
+#### ❌ **Restricted Actions**
+
+| Action | Reason |
+|--------|--------|
+| **Upload Documents** | Issuer/Admin only |
+| **Delete Documents** | Issuer/Admin only |
+| **Replace Documents** | Issuer/Admin only |
+| **Create Folders** | Issuer/Admin only |
+| **Invite Users** | Issuer/Admin only |
+| **Download Documents** | Blocked (logged as DOWNLOAD_BLOCKED) |
+| **Print Documents** | Blocked (logged as PRINT_BLOCKED) |
+| **View Documents Without Access** | Must have active access grant |
+| **View When External Sharing Disabled** | External sharing must be enabled |
+| **View Expired Room Documents** | Room must be ACTIVE |
+| **Modify Global Policies** | Admin-only action |
+| **Access Admin Panel** | Admin-only action |
+
+#### 🔒 **Access Requirements**
+- Must be explicitly invited to a deal
+- Access grant must be ACTIVE
+- Access must not be expired
+- Deal room must be ACTIVE (not EXPIRED)
+- **External sharing must be ENABLED** (deal-level setting)
+- Authenticated via OTP/guest login
+
+#### 📊 **Permission Summary**
+- **Document Management**: ❌ None (Read-only)
+- **Access Management**: ❌ None
+- **Viewing**: ✅ Conditional (Access grant + External sharing enabled)
+- **Admin Functions**: ❌ None
+- **Audit Access**: ✅ View only
+
+#### ⚠️ **Special Restrictions**
+External Guests have an additional restriction: Even if they have an access grant, they cannot view documents if the deal has `externalSharing: false`. This is logged as `ACCESS_DENIED_EXTERNAL_SHARING_OFF`.
+
+---
+
+### 5. Admin - Actions Matrix
+
+#### ✅ **Allowed Actions**
+
+| Action | Description | Notes |
+|--------|-------------|-------|
+| **All Issuer Actions** | Everything an Issuer can do | Full document and access management |
+| **View All Deals** | View all deals regardless of access | Override access restrictions |
+| **Access Any Deal** | Access any deal's data room | No access grant required |
+| **View All Documents** | View documents in any deal | Override access restrictions |
+| **Upload to Any Deal** | Upload documents to any deal | Can manage any deal |
+| **Delete from Any Deal** | Delete documents from any deal | Can manage any deal |
+| **Invite to Any Deal** | Invite users to any deal | Can manage access for any deal |
+| **Access Admin Panel** | Access admin interface | Admin-only section |
+| **View Global Policies** | View platform-wide settings | Admin-only |
+| **Modify Global Policies** | Change platform defaults | Admin-only |
+| **Set External Sharing Default** | Set default for external sharing | Admin-only |
+| **Set Soft Delete Period** | Configure soft delete grace period | Admin-only |
+| **Apply Legal Hold** | Apply legal hold to deals | Admin-only |
+| **Release Legal Hold** | Release legal hold | Admin-only |
+| **Force Soft Delete** | Force soft delete on deals | Admin-only |
+| **Force Hard Delete** | Permanently delete deal documents | Admin-only |
+| **View All Audit Logs** | View audit logs for all deals | Full audit access |
+| **Override Access Checks** | Bypass access validation | Admin privilege |
+| **Block Non-Admin Access** | Prevent non-admins from accessing admin panel | Automatic enforcement |
+
+#### ❌ **Restricted Actions**
+
+| Action | Reason |
+|--------|--------|
+| **Download Documents** | Blocked (logged as DOWNLOAD_BLOCKED) - Security policy |
+| **Print Documents** | Blocked (logged as PRINT_BLOCKED) - Security policy |
+
+**Note**: Even Admins cannot download or print documents - this is a security policy enforced for all roles.
+
+#### 📊 **Permission Summary**
+- **Document Management**: ✅ Full (All deals, Override access)
+- **Access Management**: ✅ Full (All deals, Override access)
+- **Viewing**: ✅ Full (All deals, Override access)
+- **Admin Functions**: ✅ Full (All admin actions)
+- **Audit Access**: ✅ Full (All deals)
+
+#### 🔐 **Admin Privileges**
+- **Override Access**: Can access any deal without access grant
+- **Global Control**: Can modify platform-wide settings
+- **Lifecycle Control**: Can apply legal hold, force deletes
+- **Full Audit Access**: Can view audit logs for all deals
+- **Policy Management**: Can set global defaults
+
+---
+
+## Action Comparison Table
+
+| Action | Issuer | Market Maker | Investor | External Guest | Admin |
+|--------|--------|--------------|----------|-----------------|-------|
+| **View Deals** | ✅ All | ✅ With access | ✅ With access | ✅ With access | ✅ All |
+| **View Documents** | ✅ All | ✅ With access | ✅ With access | ✅ With access + external sharing | ✅ All |
+| **Upload Documents** | ✅ | ❌ | ❌ | ❌ | ✅ |
+| **Delete Documents** | ✅ | ❌ | ❌ | ❌ | ✅ |
+| **Create Folders** | ✅ | ❌ | ❌ | ❌ | ✅ |
+| **Invite Users** | ✅ | ❌ | ❌ | ❌ | ✅ |
+| **Download Documents** | ❌ Blocked | ❌ Blocked | ❌ Blocked | ❌ Blocked | ❌ Blocked |
+| **Print Documents** | ❌ Blocked | ❌ Blocked | ❌ Blocked | ❌ Blocked | ❌ Blocked |
+| **View Audit Logs** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Modify Global Policies** | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Apply Legal Hold** | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Force Delete** | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Access Admin Panel** | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Override Access** | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## Access Denial Scenarios
+
+### Scenario 1: Room Expired
+- **Affects**: All roles
+- **Action**: Attempting to view document
+- **Result**: `ACCESS_DENIED_ROOM_EXPIRED` logged
+- **User Experience**: Redirected to audit log
+
+### Scenario 2: No Access Grant
+- **Affects**: Market Maker, Investor, External Guest
+- **Action**: Attempting to view document without access grant
+- **Result**: `ACCESS_DENIED_NO_GRANT` logged
+- **User Experience**: Redirected to audit log
+
+### Scenario 3: External Sharing Disabled
+- **Affects**: External Guest only
+- **Action**: Attempting to view document when external sharing is disabled
+- **Result**: `ACCESS_DENIED_EXTERNAL_SHARING_OFF` logged
+- **User Experience**: Redirected to audit log
+
+### Scenario 4: Access Expired
+- **Affects**: Market Maker, Investor, External Guest
+- **Action**: Attempting to view document with expired access grant
+- **Result**: `ACCESS_DENIED_NO_GRANT` logged (expired grants are treated as no grant)
+- **User Experience**: Redirected to audit log
+
+### Scenario 5: Admin Panel Access
+- **Affects**: All non-admin roles
+- **Action**: Attempting to access admin panel
+- **Result**: `ADMIN_BLOCKED` logged
+- **User Experience**: Redirected to audit log
+
+---
+
+## Role Switching Behavior
+
+Users can switch roles using the role selector in the top navigation. However:
+
+- **Admin Panel Access**: If a non-admin user switches roles while on the admin panel, they are automatically redirected to the Deals view
+- **Access Validation**: When switching roles, access validation is re-evaluated based on the new role
+- **Audit Logging**: Role switches are logged as `ROLE_SWITCH` events
+
+---
+
+## Permission Enforcement Flow
+
+```
+User Action Request
+    ↓
+Check User Role
+    ↓
+Check Action Type
+    ↓
+┌─────────────────────────────────────┐
+│ Document View Request?              │
+└─────────────────────────────────────┘
+    ↓ Yes
+Check Room Status (ACTIVE/EXPIRED)
+    ↓ ACTIVE
+Check External Sharing (if External Guest)
+    ↓ Enabled
+Check Access Grant (if not Issuer/Admin)
+    ↓ Granted & Active
+Allow Access → Log VIEW_START
+    ↓
+Any Denial → Log ACCESS_DENIED_* → Redirect to Audit
+```
+
+---
+
+## Best Practices
+
+### For Issuers
+- Regularly review access grants and expiry dates
+- Organize documents into logical folders
+- Keep room expiry dates updated
+- Monitor audit logs for suspicious activity
+- Use external sharing toggle carefully
+
+### For Market Makers & Investors
+- Request access from Issuer if needed
+- Be aware of access expiry dates
+- Report any access issues
+- Review audit logs to track your activity
+
+### For External Guests
+- Ensure external sharing is enabled before requesting access
+- Be aware of additional restrictions
+- Contact Issuer if access is denied
+
+### For Admins
+- Use override powers responsibly
+- Document all admin actions
+- Review global policies regularly
+- Monitor audit logs for compliance
+- Apply legal holds when required
 
 ---
 
