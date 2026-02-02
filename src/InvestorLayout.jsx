@@ -369,46 +369,57 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
         </div>
       </CardHeader>
       <CardContent className="pt-2">
-        <div className="space-y-2">
-          {filtered.map((d) => (
-            <button
-              key={d.id}
-              onClick={() => setSelectedDealId(d.id)}
-              className={cn(
-                "w-full rounded-2xl border p-4 text-left transition",
-                selectedDealId === d.id ? "border-slate-400 bg-slate-50" : "hover:bg-slate-50"
-              )}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-sm font-semibold">{d.id}</div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">Issuer: {d.issuerOrg} • Pool: {d.poolId}</div>
+        <div className="overflow-hidden rounded-2xl border">
+          <div className="grid grid-cols-12 gap-0 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-700">
+            <div className="col-span-2">Deal ID</div>
+            <div className="col-span-2">Issuer</div>
+            <div className="col-span-1">Pool</div>
+            <div className="col-span-1">Status</div>
+            <div className="col-span-1">Room Status</div>
+            <div className="col-span-1">Expiry</div>
+            <div className="col-span-1">Soft Delete</div>
+            <div className="col-span-1">External</div>
+            <div className="col-span-1">Updated</div>
+            <div className="col-span-1 text-right">Action</div>
+          </div>
+          <div className="divide-y">
+            {filtered.map((d) => (
+              <div
+                key={d.id}
+                className={cn(
+                  "grid grid-cols-12 gap-0 px-3 py-2 text-xs transition",
+                  selectedDealId === d.id ? "bg-slate-50" : "hover:bg-slate-50"
+                )}
+              >
+                <div className="col-span-2">
+                  <div className="font-semibold">{d.id}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"}>{d.dataRoom.status}</Badge>
-                  <Badge variant="outline">{d.status}</Badge>
+                <div className="col-span-2 truncate text-muted-foreground">{d.issuerOrg}</div>
+                <div className="col-span-1 text-muted-foreground">{d.poolId}</div>
+                <div className="col-span-1">
+                  <Badge variant="outline" className="text-[10px]">{d.status}</Badge>
+                </div>
+                <div className="col-span-1">
+                  <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"} className="text-[10px]">
+                    {d.dataRoom.status}
+                  </Badge>
+                </div>
+                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.expiry}</div>
+                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.softDeleteDays} days</div>
+                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.externalSharing ? "Yes" : "No"}</div>
+                <div className="col-span-1 text-muted-foreground text-[11px]">{d.updatedAt}</div>
+                <div className="col-span-1 flex justify-end">
+                  <Button
+                    size="sm"
+                    variant={selectedDealId === d.id ? "default" : "outline"}
+                    onClick={() => setSelectedDealId(d.id)}
+                  >
+                    Select
+                  </Button>
                 </div>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-muted-foreground sm:grid-cols-4">
-                <div>
-                  <div className="text-[11px]">Room Expiry</div>
-                  <div className="text-slate-900">{d.dataRoom.expiry}</div>
-                </div>
-                <div>
-                  <div className="text-[11px]">Soft Delete</div>
-                  <div className="text-slate-900">{d.dataRoom.softDeleteDays} days</div>
-                </div>
-                <div>
-                  <div className="text-[11px]">External Sharing</div>
-                  <div className="text-slate-900">{d.dataRoom.externalSharing ? "Enabled" : "Disabled"}</div>
-                </div>
-                <div>
-                  <div className="text-[11px]">Updated</div>
-                  <div className="text-slate-900">{d.updatedAt}</div>
-                </div>
-              </div>
-            </button>
-          ))}
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>
