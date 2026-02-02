@@ -77,8 +77,6 @@ const ROLES = [
   { key: "ISSUER", label: "Issuer (Org Member)" },
   { key: "MARKET_MAKER", label: "Market Maker" },
   { key: "INVESTOR", label: "Investor" },
-  { key: "EXTERNAL", label: "External Guest" },
-  { key: "ADMIN", label: "Admin" },
 ];
 
 const DEALS = [
@@ -92,7 +90,6 @@ const DEALS = [
       expiry: "2026-02-15",
       softDeleteDays: 14,
       legalHold: false,
-      externalSharing: true,
     },
     updatedAt: "2026-01-29",
   },
@@ -106,7 +103,6 @@ const DEALS = [
       expiry: "2026-01-20",
       softDeleteDays: 14,
       legalHold: false,
-      externalSharing: false,
     },
     updatedAt: "2026-01-20",
   },
@@ -193,27 +189,7 @@ const ACCESS = [
     expiresOn: "2026-02-10",
     status: "ACTIVE",
   },
-  {
-    id: "ACC-03",
-    dealId: "DEAL-ALPHA-01",
-    partyType: "External",
-    role: "EXTERNAL",
-    email: "counsel@lawfirm.com",
-    permission: "VIEW_ONLY",
-    expiresOn: "2026-02-03",
-    status: "ACTIVE",
-  },
   // Deal Beta access
-  {
-    id: "ACC-10",
-    dealId: "DEAL-BETA-02",
-    partyType: "External",
-    role: "EXTERNAL",
-    email: "auditor@accounting.com",
-    permission: "VIEW_ONLY",
-    expiresOn: "2026-01-18",
-    status: "EXPIRED",
-  },
 ];
 
 const AUDIT_SEED = [
@@ -296,9 +272,6 @@ function TopNav({ role, setRole, route, setRoute }) {
           <Button variant={route === "AUDIT" ? "default" : "ghost"} onClick={() => setRoute("AUDIT")}>
             <Eye className="mr-2 h-4 w-4" /> Audit
           </Button>
-          <Button variant={route === "ADMIN" ? "default" : "ghost"} onClick={() => setRoute("ADMIN")}>
-            <Settings className="mr-2 h-4 w-4" /> Admin
-          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -327,12 +300,11 @@ function TopNav({ role, setRole, route, setRoute }) {
 
       <div className="mx-auto max-w-7xl px-4 pb-3 md:hidden">
         <Tabs value={route} onValueChange={setRoute}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="DEALS">Deals</TabsTrigger>
             <TabsTrigger value="ROOM">Room</TabsTrigger>
             <TabsTrigger value="VIEWER">Viewer</TabsTrigger>
             <TabsTrigger value="AUDIT">Audit</TabsTrigger>
-            <TabsTrigger value="ADMIN">Admin</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -340,7 +312,7 @@ function TopNav({ role, setRole, route, setRoute }) {
   );
 }
 
-function DealsList({ selectedDealId, setSelectedDealId, query, setQuery, onOpenRoom }) {
+function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return DEALS;
@@ -364,90 +336,46 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery, onOpenR
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <Pill icon={ShieldCheck} label="Custody: IM-controlled" tone="ok" />
-          <Pill icon={Lock} label="External: view-only" />
           <Pill icon={Clock} label="Expiry + retention" />
         </div>
       </CardHeader>
       <CardContent className="pt-2">
-        <div className="overflow-x-auto">
-          <div className="overflow-hidden rounded-2xl border min-w-full">
-            <div className="grid grid-cols-12 gap-0 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-700">
-              <div className="col-span-2">Deal ID</div>
-              <div className="col-span-2">Issuer</div>
-              <div className="col-span-1">Pool</div>
-              <div className="col-span-1">Status</div>
-              <div className="col-span-1">Room Status</div>
-              <div className="col-span-1">Expiry</div>
-              <div className="col-span-1">Soft Delete</div>
-              <div className="col-span-1">External</div>
-              <div className="col-span-1">Updated</div>
-              <div className="col-span-2 text-right">Actions</div>
-            </div>
-            <div className="divide-y">
-              {filtered.length === 0 ? (
-                <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                  No deals found matching your search.
-                </div>
-              ) : (
-                filtered.map((d) => (
-                  <div
-                    key={d.id}
-                    className={cn(
-                      "grid grid-cols-12 gap-0 px-3 py-2 text-xs transition cursor-pointer",
-                      selectedDealId === d.id ? "bg-blue-50 border-l-4 border-l-blue-500" : "hover:bg-slate-50"
-                    )}
-                    onClick={() => setSelectedDealId(d.id)}
-                  >
-                    <div className="col-span-2">
-                      <div className="font-semibold">{d.id}</div>
-                    </div>
-                    <div className="col-span-2 truncate text-muted-foreground" title={d.issuerOrg}>
-                      {d.issuerOrg}
-                    </div>
-                    <div className="col-span-1 text-muted-foreground">{d.poolId}</div>
-                    <div className="col-span-1">
-                      <Badge variant="outline" className="text-[10px] whitespace-nowrap">{d.status}</Badge>
-                    </div>
-                    <div className="col-span-1">
-                      <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"} className="text-[10px] whitespace-nowrap">
-                        {d.dataRoom.status}
-                      </Badge>
-                    </div>
-                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.expiry}</div>
-                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.softDeleteDays} days</div>
-                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.externalSharing ? "Yes" : "No"}</div>
-                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.updatedAt}</div>
-                    <div className="col-span-2 flex justify-end gap-1">
-                      <Button
-                        size="sm"
-                        variant={selectedDealId === d.id ? "default" : "outline"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedDealId(d.id);
-                        }}
-                      >
-                        Select
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedDealId(d.id);
-                          if (onOpenRoom) {
-                            onOpenRoom(d.id);
-                          }
-                        }}
-                        title="Open Data Room"
-                      >
-                        <FolderTree className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                ))
+        <div className="space-y-2">
+          {filtered.map((d) => (
+            <button
+              key={d.id}
+              onClick={() => setSelectedDealId(d.id)}
+              className={cn(
+                "w-full rounded-2xl border p-4 text-left transition",
+                selectedDealId === d.id ? "border-slate-400 bg-slate-50" : "hover:bg-slate-50"
               )}
-            </div>
-          </div>
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold">{d.id}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Issuer: {d.issuerOrg} • Pool: {d.poolId}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"}>{d.dataRoom.status}</Badge>
+                  <Badge variant="outline">{d.status}</Badge>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-muted-foreground sm:grid-cols-4">
+                <div>
+                  <div className="text-[11px]">Room Expiry</div>
+                  <div className="text-slate-900">{d.dataRoom.expiry}</div>
+                </div>
+                <div>
+                  <div className="text-[11px]">Soft Delete</div>
+                  <div className="text-slate-900">{d.dataRoom.softDeleteDays} days</div>
+                </div>
+                <div>
+                  <div className="text-[11px]">Updated</div>
+                  <div className="text-slate-900">{d.updatedAt}</div>
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       </CardContent>
     </Card>
@@ -455,7 +383,7 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery, onOpenR
 }
 
 function DealSummary({ deal, role }) {
-  const canManage = role === "ISSUER" || role === "ADMIN";
+  const canManage = role === "ISSUER";
   return (
     <Card className="rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -568,7 +496,6 @@ function DocTable({ docs, canManage, onOpen, onUpload, onDelete, onReplace }) {
                 </Button>
               </>
             ) : null}
-            <Pill icon={Lock} label="Read-only for external" />
           </div>
         </div>
         <div className="mt-2 text-xs text-muted-foreground">Viewer is DocSend-like: watermark + audit + blocked download/print.</div>
@@ -628,7 +555,7 @@ function AccessPanel({ access, canManage, onInvite }) {
             ) : null}
           </div>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">Issuer/Admin can invite internal roles and external guests. All non-issuer access is view-only.</div>
+        <div className="mt-2 text-xs text-muted-foreground">Issuer can invite internal roles (Market Maker, Investor). All non-issuer access is view-only.</div>
       </CardHeader>
       <CardContent className="pt-2">
         <div className="overflow-hidden rounded-2xl border">
@@ -899,61 +826,9 @@ function Viewer({ dealId, doc, viewerIdentity, onClose, onAudit }) {
   );
 }
 
-function AdminPolicyPanel({ policy, setPolicy }) {
-  return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Admin Policies</CardTitle>
-          <Pill icon={Settings} label="Global defaults" />
-        </div>
-        <div className="mt-2 text-xs text-muted-foreground">Applies platform-wide. Deal-level room settings can further restrict access.</div>
-      </CardHeader>
-      <CardContent className="pt-2">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-2xl border p-4">
-            <div>
-              <div className="text-sm font-semibold">Default external sharing</div>
-              <div className="text-xs text-muted-foreground">If disabled, external guests cannot be invited.</div>
-            </div>
-            <Switch checked={policy.defaultExternalSharing} onCheckedChange={(v) => setPolicy({ ...policy, defaultExternalSharing: v })} />
-          </div>
-
-          <div className="flex items-center justify-between rounded-2xl border p-4">
-            <div>
-              <div className="text-sm font-semibold">Default soft delete (days)</div>
-              <div className="text-xs text-muted-foreground">Grace period after room expiry before hard delete.</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" onClick={() => setPolicy({ ...policy, defaultSoftDeleteDays: Math.max(1, policy.defaultSoftDeleteDays - 1) })}>
-                <span className="text-sm">−</span>
-              </Button>
-              <div className="min-w-[64px] rounded-xl border bg-slate-50 px-2 py-1 text-center text-xs font-semibold">{policy.defaultSoftDeleteDays}</div>
-              <Button variant="outline" size="icon" onClick={() => setPolicy({ ...policy, defaultSoftDeleteDays: policy.defaultSoftDeleteDays + 1 })}>
-                <span className="text-sm">+</span>
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border p-4">
-            <div className="text-sm font-semibold">Lifecycle enforcement</div>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-muted-foreground">
-              <li>Room expiry disables all access immediately.</li>
-              <li>Soft delete keeps encrypted docs but blocks access.</li>
-              <li>Hard delete permanently removes deal prefix docs; audit logs retained.</li>
-              <li>Legal hold pauses deletion clocks.</li>
-            </ul>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
   const [email, setEmail] = useState("");
-  const [type, setType] = useState("External");
-  const [role, setRole] = useState("EXTERNAL");
+  const [role, setRole] = useState("INVESTOR");
   const [expiresOn, setExpiresOn] = useState("2026-02-03");
 
   return (
@@ -968,7 +843,7 @@ function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
               <Lock className="mt-0.5 h-4 w-4" />
               <div>
                 <div className="font-semibold">Permission required</div>
-                <div className="mt-1 text-muted-foreground">Only Issuer org members or Admin can invite users.</div>
+                <div className="mt-1 text-muted-foreground">Only Issuer org members can invite users.</div>
               </div>
             </div>
           </div>
@@ -983,40 +858,17 @@ function InviteDialog({ open, onOpenChange, dealId, canInvite }) {
               <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@company.com" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <div className="text-xs font-semibold">Party Type</div>
-                <div className="flex gap-2">
-                  <Button variant={type === "Internal" ? "default" : "outline"} onClick={() => { setType("Internal"); setRole("INVESTOR"); }}>
-                    Internal
-                  </Button>
-                  <Button variant={type === "External" ? "default" : "outline"} onClick={() => { setType("External"); setRole("EXTERNAL"); }}>
-                    External
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-xs font-semibold">Role</div>
-                <div className="flex gap-2">
-                  {type === "Internal" ? (
-                    <>
-                      <Button variant={role === "INVESTOR" ? "default" : "outline"} onClick={() => setRole("INVESTOR")}>Investor</Button>
-                      <Button variant={role === "MARKET_MAKER" ? "default" : "outline"} onClick={() => setRole("MARKET_MAKER")}>Market Maker</Button>
-                    </>
-                  ) : (
-                    <Button variant={role === "EXTERNAL" ? "default" : "outline"} onClick={() => setRole("EXTERNAL")}>External Guest</Button>
-                  )}
-                </div>
+            <div className="space-y-2">
+              <div className="text-xs font-semibold">Role</div>
+              <div className="flex gap-2">
+                <Button variant={role === "INVESTOR" ? "default" : "outline"} onClick={() => setRole("INVESTOR")}>Investor</Button>
+                <Button variant={role === "MARKET_MAKER" ? "default" : "outline"} onClick={() => setRole("MARKET_MAKER")}>Market Maker</Button>
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="text-xs font-semibold">Access expiry date</div>
               <Input value={expiresOn} onChange={(e) => setExpiresOn(e.target.value)} placeholder="YYYY-MM-DD" />
-            </div>
-
-            <div className="rounded-2xl border p-3 text-xs text-muted-foreground">
-              External Guests will authenticate via OTP/guest login. All access is view-only and audited.
             </div>
 
             <div className="flex justify-end gap-2">
@@ -1046,7 +898,7 @@ function CreateFolderDialog({ open, onOpenChange, canManage }) {
               <Lock className="mt-0.5 h-4 w-4" />
               <div>
                 <div className="font-semibold">Permission required</div>
-                <div className="mt-1 text-muted-foreground">Only Issuer org members or Admin can create folders.</div>
+                <div className="mt-1 text-muted-foreground">Only Issuer org members can create folders.</div>
               </div>
             </div>
           </div>
@@ -1087,19 +939,13 @@ export default function IMDueDiligenceDataRoomMock() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [folderOpen, setFolderOpen] = useState(false);
 
-  // admin policy
-  const [policy, setPolicy] = useState({
-    defaultExternalSharing: true,
-    defaultSoftDeleteDays: 14,
-  });
-
   const deal = useMemo(() => DEALS.find((d) => d.id === selectedDealId), [selectedDealId]);
 
-  const canManageRoom = role === "ISSUER" || role === "ADMIN";
-  const canInvite = role === "ISSUER" || role === "ADMIN";
+  const canManageRoom = role === "ISSUER";
+  const canInvite = role === "ISSUER";
   const canViewRoom = true; // everyone can view the room UI, but content access depends on room + user access policy
 
-  // permission enforcement: only Issuer/Admin can upload/modify
+  // permission enforcement: only Issuer can upload/modify
   const canUpload = canManageRoom;
 
   const accessForDeal = useMemo(() => ACCESS.filter((a) => a.dealId === selectedDealId), [selectedDealId]);
@@ -1145,15 +991,8 @@ export default function IMDueDiligenceDataRoomMock() {
       return;
     }
 
-    // Enforce external sharing toggle: blocks EXTERNAL invites and EXTERNAL viewing
-    if (!deal.dataRoom.externalSharing && role === "EXTERNAL") {
-      addAudit("ACCESS_DENIED_EXTERNAL_SHARING_OFF", doc);
-      setRoute("AUDIT");
-      return;
-    }
-
     // Enforce access list for non-issuer roles
-    if (role !== "ISSUER" && role !== "ADMIN") {
+    if (role !== "ISSUER") {
       const found = accessForDeal.find((a) => a.role === role && a.status === "ACTIVE");
       if (!found) {
         addAudit("ACCESS_DENIED_NO_GRANT", doc);
@@ -1173,19 +1012,10 @@ export default function IMDueDiligenceDataRoomMock() {
         role={role}
         setRole={(r) => {
           setRole(r);
-          // block admin screen for non-admin
-          if (route === "ADMIN" && r !== "ADMIN") setRoute("DEALS");
           addAudit("ROLE_SWITCH");
         }}
         route={route}
-        setRoute={(next) => {
-          if (next === "ADMIN" && role !== "ADMIN") {
-            addAudit("ADMIN_BLOCKED");
-            setRoute("AUDIT");
-            return;
-          }
-          setRoute(next);
-        }}
+        setRoute={setRoute}
       />
 
       <main className="mx-auto max-w-7xl px-4 py-6">
@@ -1198,9 +1028,7 @@ export default function IMDueDiligenceDataRoomMock() {
                 ? "Due Diligence Data Room"
                 : route === "VIEWER"
                 ? "Secure Viewer"
-                : route === "AUDIT"
-                ? "Audit"
-                : "Admin"}
+                : "Audit"}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
               Role: <span className="font-semibold text-slate-900">{ROLES.find((r) => r.key === role)?.label}</span> • Deal: <span className="font-semibold text-slate-900">{selectedDealId}</span>
@@ -1210,9 +1038,6 @@ export default function IMDueDiligenceDataRoomMock() {
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="rounded-full">
               <ShieldCheck className="mr-1 h-3.5 w-3.5" /> POC
-            </Badge>
-            <Badge variant="outline" className="rounded-full">
-              <Lock className="mr-1 h-3.5 w-3.5" /> Read-only external
             </Badge>
             <Badge variant="outline" className="rounded-full">
               <Clock className="mr-1 h-3.5 w-3.5" /> Expiry + retention
@@ -1233,14 +1058,6 @@ export default function IMDueDiligenceDataRoomMock() {
                 }}
                 query={dealQuery}
                 setQuery={setDealQuery}
-                onOpenRoom={(dealId) => {
-                  setSelectedDealId(dealId);
-                  setActiveFolder("ALL");
-                  setSelectedDoc(null);
-                  setRoute("ROOM");
-                  addAudit("DEAL_SELECT");
-                  addAudit("ROOM_OPEN_FROM_TABLE");
-                }}
               />
 
               {deal ? <DealSummary deal={deal} role={role} /> : null}
@@ -1343,45 +1160,6 @@ export default function IMDueDiligenceDataRoomMock() {
                 </motion.div>
               )}
 
-              {route === "ADMIN" && (
-                <motion.div key="admin" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }} className="space-y-4">
-                  <AdminPolicyPanel
-                    policy={policy}
-                    setPolicy={(p) => {
-                      setPolicy(p);
-                      addAudit("ADMIN_POLICY_CHANGE");
-                    }}
-                  />
-                  <Card className="rounded-2xl shadow-sm">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-base">Admin Actions (Illustrative)</CardTitle>
-                        <Pill icon={ShieldCheck} label="Override" tone="warn" />
-                      </div>
-                      <div className="mt-2 text-xs text-muted-foreground">These actions demonstrate lifecycle and compliance override controls.</div>
-                    </CardHeader>
-                    <CardContent className="pt-2">
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <Button variant="outline" onClick={() => addAudit("APPLY_LEGAL_HOLD")}>
-                          <Ban className="mr-2 h-4 w-4" /> Apply Legal Hold
-                        </Button>
-                        <Button variant="outline" onClick={() => addAudit("RELEASE_LEGAL_HOLD")}>
-                          <BadgeCheck className="mr-2 h-4 w-4" /> Release Legal Hold
-                        </Button>
-                        <Button variant="outline" onClick={() => addAudit("FORCE_SOFT_DELETE")}>
-                          <FileDown className="mr-2 h-4 w-4" /> Force Soft Delete
-                        </Button>
-                        <Button variant="outline" onClick={() => addAudit("FORCE_HARD_DELETE")}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Force Hard Delete
-                        </Button>
-                      </div>
-                      <div className="mt-4 rounded-2xl border bg-slate-50 p-3 text-xs text-muted-foreground">
-                        Hard delete permanently removes docs under issuer container prefix deals/{selectedDealId}/dataroom/… Audit logs remain.
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )}
             </AnimatePresence>
           </div>
         </div>
