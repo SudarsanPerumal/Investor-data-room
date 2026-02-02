@@ -340,7 +340,7 @@ function TopNav({ role, setRole, route, setRoute }) {
   );
 }
 
-function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
+function DealsList({ selectedDealId, setSelectedDealId, query, setQuery, onOpenRoom }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return DEALS;
@@ -381,7 +381,7 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
               <div className="col-span-1">Soft Delete</div>
               <div className="col-span-1">External</div>
               <div className="col-span-1">Updated</div>
-              <div className="col-span-1 text-right">Action</div>
+              <div className="col-span-2 text-right">Actions</div>
             </div>
             <div className="divide-y">
               {filtered.length === 0 ? (
@@ -417,7 +417,7 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
                     <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.softDeleteDays} days</div>
                     <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.externalSharing ? "Yes" : "No"}</div>
                     <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.updatedAt}</div>
-                    <div className="col-span-1 flex justify-end">
+                    <div className="col-span-2 flex justify-end gap-1">
                       <Button
                         size="sm"
                         variant={selectedDealId === d.id ? "default" : "outline"}
@@ -427,6 +427,20 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
                         }}
                       >
                         Select
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDealId(d.id);
+                          if (onOpenRoom) {
+                            onOpenRoom(d.id);
+                          }
+                        }}
+                        title="Open Data Room"
+                      >
+                        <FolderTree className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
