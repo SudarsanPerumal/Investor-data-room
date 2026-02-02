@@ -369,56 +369,70 @@ function DealsList({ selectedDealId, setSelectedDealId, query, setQuery }) {
         </div>
       </CardHeader>
       <CardContent className="pt-2">
-        <div className="overflow-hidden rounded-2xl border">
-          <div className="grid grid-cols-12 gap-0 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-700">
-            <div className="col-span-2">Deal ID</div>
-            <div className="col-span-2">Issuer</div>
-            <div className="col-span-1">Pool</div>
-            <div className="col-span-1">Status</div>
-            <div className="col-span-1">Room Status</div>
-            <div className="col-span-1">Expiry</div>
-            <div className="col-span-1">Soft Delete</div>
-            <div className="col-span-1">External</div>
-            <div className="col-span-1">Updated</div>
-            <div className="col-span-1 text-right">Action</div>
-          </div>
-          <div className="divide-y">
-            {filtered.map((d) => (
-              <div
-                key={d.id}
-                className={cn(
-                  "grid grid-cols-12 gap-0 px-3 py-2 text-xs transition",
-                  selectedDealId === d.id ? "bg-slate-50" : "hover:bg-slate-50"
-                )}
-              >
-                <div className="col-span-2">
-                  <div className="font-semibold">{d.id}</div>
+        <div className="overflow-x-auto">
+          <div className="overflow-hidden rounded-2xl border min-w-full">
+            <div className="grid grid-cols-12 gap-0 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-700">
+              <div className="col-span-2">Deal ID</div>
+              <div className="col-span-2">Issuer</div>
+              <div className="col-span-1">Pool</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-1">Room Status</div>
+              <div className="col-span-1">Expiry</div>
+              <div className="col-span-1">Soft Delete</div>
+              <div className="col-span-1">External</div>
+              <div className="col-span-1">Updated</div>
+              <div className="col-span-1 text-right">Action</div>
+            </div>
+            <div className="divide-y">
+              {filtered.length === 0 ? (
+                <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+                  No deals found matching your search.
                 </div>
-                <div className="col-span-2 truncate text-muted-foreground">{d.issuerOrg}</div>
-                <div className="col-span-1 text-muted-foreground">{d.poolId}</div>
-                <div className="col-span-1">
-                  <Badge variant="outline" className="text-[10px]">{d.status}</Badge>
-                </div>
-                <div className="col-span-1">
-                  <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"} className="text-[10px]">
-                    {d.dataRoom.status}
-                  </Badge>
-                </div>
-                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.expiry}</div>
-                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.softDeleteDays} days</div>
-                <div className="col-span-1 text-muted-foreground text-[11px]">{d.dataRoom.externalSharing ? "Yes" : "No"}</div>
-                <div className="col-span-1 text-muted-foreground text-[11px]">{d.updatedAt}</div>
-                <div className="col-span-1 flex justify-end">
-                  <Button
-                    size="sm"
-                    variant={selectedDealId === d.id ? "default" : "outline"}
+              ) : (
+                filtered.map((d) => (
+                  <div
+                    key={d.id}
+                    className={cn(
+                      "grid grid-cols-12 gap-0 px-3 py-2 text-xs transition cursor-pointer",
+                      selectedDealId === d.id ? "bg-blue-50 border-l-4 border-l-blue-500" : "hover:bg-slate-50"
+                    )}
                     onClick={() => setSelectedDealId(d.id)}
                   >
-                    Select
-                  </Button>
-                </div>
-              </div>
-            ))}
+                    <div className="col-span-2">
+                      <div className="font-semibold">{d.id}</div>
+                    </div>
+                    <div className="col-span-2 truncate text-muted-foreground" title={d.issuerOrg}>
+                      {d.issuerOrg}
+                    </div>
+                    <div className="col-span-1 text-muted-foreground">{d.poolId}</div>
+                    <div className="col-span-1">
+                      <Badge variant="outline" className="text-[10px] whitespace-nowrap">{d.status}</Badge>
+                    </div>
+                    <div className="col-span-1">
+                      <Badge variant={d.dataRoom.status === "ACTIVE" ? "secondary" : "outline"} className="text-[10px] whitespace-nowrap">
+                        {d.dataRoom.status}
+                      </Badge>
+                    </div>
+                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.expiry}</div>
+                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.softDeleteDays} days</div>
+                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.dataRoom.externalSharing ? "Yes" : "No"}</div>
+                    <div className="col-span-1 text-muted-foreground text-[11px] whitespace-nowrap">{d.updatedAt}</div>
+                    <div className="col-span-1 flex justify-end">
+                      <Button
+                        size="sm"
+                        variant={selectedDealId === d.id ? "default" : "outline"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDealId(d.id);
+                        }}
+                      >
+                        Select
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
