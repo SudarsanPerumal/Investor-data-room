@@ -1233,6 +1233,14 @@ export default function IMDueDiligenceDataRoomMock() {
                 }}
                 query={dealQuery}
                 setQuery={setDealQuery}
+                onOpenRoom={(dealId) => {
+                  setSelectedDealId(dealId);
+                  setActiveFolder("ALL");
+                  setSelectedDoc(null);
+                  setRoute("ROOM");
+                  addAudit("DEAL_SELECT");
+                  addAudit("ROOM_OPEN_FROM_TABLE");
+                }}
               />
 
               {deal ? <DealSummary deal={deal} role={role} /> : null}
