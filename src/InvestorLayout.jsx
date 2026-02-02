@@ -1012,20 +1012,6 @@ export default function IMDueDiligenceDataRoomMock() {
     return all.filter((d) => d.path === activeFolder);
   }, [selectedDealId, activeFolder]);
 
-  // Filtered Data
-  const accessForDeal = useMemo(() => ACCESS.filter((a) => a.dealId === selectedDealId), [selectedDealId]);
-
-  const folders = useMemo(() => {
-    const set = new Set(DOCS.filter((d) => d.dealId === selectedDealId).map((d) => d.path));
-    return Array.from(set).sort();
-  }, [selectedDealId]);
-
-  const docsForView = useMemo(() => {
-    const all = DOCS.filter((d) => d.dealId === selectedDealId);
-    if (activeFolder === "ALL") return all;
-    return all.filter((d) => d.path === activeFolder);
-  }, [selectedDealId, activeFolder]);
-
   // Viewer Identity for Watermarking
   const viewerIdentity = useMemo(() => {
     if (role === "ISSUER") return "issuer_member@issuer.com (Issuer)";
